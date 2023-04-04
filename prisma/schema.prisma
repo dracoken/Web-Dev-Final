@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int        @id @unique @default(autoincrement())
+  userName       String     @unique
+  password       String
+  stageHighScore Int? //we can easily make these to into defaults of 1 and 'joe' respectivly, if we so chosed
+  characterHS    String?
+  player         Character?
+}
+
+model Character {
+  id        Int    @id @unique @default(autoincrement())
+  name      String
+  hp        Int    @default(100)
+  str       Int    @default(10)
+  def       Int    @default(3)
+  stageNum  Int    @default(1)
+  enemy     Json? //will require us to check to if enemy is either nonexistant or dead. if either are true then update the database with a new enemy json file
+  account   User   @relation(fields: [accountId], references: [id])
+  accountId Int    @unique
+}
+
+model enemy {
+  id   Int    @id @unique @default(autoincrement())
+  name String
+  hp   Int    @default(10)
+  str  Int    @default(2)
+  def  Int    @default(0)
+}
