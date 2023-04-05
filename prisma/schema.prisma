@@ -38,3 +38,12 @@ model enemy {
   str  Int    @default(2)
   def  Int    @default(0)
 }
+
+
+//model combat{
+//  player1 User?
+//  player1Id Int @unique
+
+//  player2 User?
+//  player2Id Int @unique
+//}
