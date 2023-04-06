@@ -5,8 +5,8 @@ const port = 3000;
 app.get("/", (req,res) =>
 {
     console.log("test");
-    res.send("/index.html");
-    //res.render("/pages/index.html");
+    //res.send("/pages/index.html");
+    res.render("/pages/index.html");
 })
 
 app.listen(port)

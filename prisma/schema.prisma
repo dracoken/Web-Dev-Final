@@ -11,39 +11,42 @@ datasource db {
 }
 
 model User {
-  id             Int        @id @unique @default(autoincrement())
-  userName       String     @unique
-  password       String
-  stageHighScore Int? //we can easily make these to into defaults of 1 and 'joe' respectivly, if we so chosed
-  characterHS    String?
-  player         Character?
+  id       Int        @id @unique @default(autoincrement())
+  userName String     @unique
+  password String
+  //stageHighScore Int? //we can easily make these to into defaults of 1 and 'joe' respectivly, if we so chosed
+  //characterHS    String?
+  player   Character?
 }
 
 model Character {
-  id        Int    @id @unique @default(autoincrement())
-  name      String
-  hp        Int    @default(100)
-  str       Int    @default(10)
-  def       Int    @default(3)
-  stageNum  Int    @default(1)
-  enemy     Json? //will require us to check to if enemy is either nonexistant or dead. if either are true then update the database with a new enemy json file
-  account   User   @relation(fields: [accountId], references: [id])
-  accountId Int    @unique
+  id           Int    @id @unique @default(autoincrement())
+  name         String
+  hp           Int    @default(100)
+  currentHp    Int    @default(100)
+  str          Int    @default(10)
+  def          Int    @default(3)
+  dex          Int    @default(4)
+  //stageNum      Int    @default(1)
+  //enemy         Json? //will require us to check to if enemy is either nonexistant or dead. if either are true then update the database with a new enemy json file
+  account      User   @relation(fields: [accountId], references: [id]) //this is the account that the user plays with
+  accountId    Int    @unique
+  matchConnect Match  @relation(fields: [matchId], references: [id]) //this is the battle that the user is part taking in
+  matchId      Int
 }
 
-model enemy {
-  id   Int    @id @unique @default(autoincrement())
-  name String
-  hp   Int    @default(10)
-  str  Int    @default(2)
-  def  Int    @default(0)
-}
-
-
-//model combat{
-//  player1 User?
-//  player1Id Int @unique
-
-//  player2 User?
-//  player2Id Int @unique
+//model enemy {
+//  id   Int    @id @unique @default(autoincrement())
+//  name String
+//  hp   Int    @default(10)
+//  str  Int    @default(2)
+//  def  Int    @default(0)
 //}
+
+model Match {
+  id            Int         @unique @default(autoincrement()) //primary key for our combats
+  players       Character[] //we need to limit this to only 2 players
+  player1First  Boolean     @default(true) //we check these values to see who gose first in combat. if = false, then player2 gose first. we calculate who gose first on the client side, and update it here at the start of a match
+  player1Turn   Boolean     @default(true) //used to determine whos turn it is currently in a match. if = true, its player1's turn. if = false its player2's turn
+  combatStarted Boolean     @default(false) //used to check if a match is occurring. if this = true, we create another match and throw the next 2 players in here to make our next game
+}
