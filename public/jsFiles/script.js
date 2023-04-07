@@ -3,8 +3,10 @@ const loginLink = document.querySelector('.login-link');
 const registerLink = document.querySelector('.register-link');
 const btnPopup = document.querySelector('.btnLogin-popup');
 const iconClose = document.querySelector('.icon-close');
+let regBtn = document.querySelector("#registerBtn");
 
-
+/*
+//we can choose to make this an onload function or keep it the way how i did it
 window.onload = function()
 {
     let regBtn = document.querySelector("#registerBtn");
@@ -13,6 +15,7 @@ window.onload = function()
         console.log("in here");
     };
 }
+*/
 
 console.log("script is loaded");
 
@@ -32,3 +35,13 @@ iconClose.addEventListener('click', ()=> {
     wrapper.classList.remove('active-popup');
     wrapper.classList.remove('active');
 });
+
+function register()
+{
+    console.log("in register function");
+}
+
+function login()
+{
+    console.log("in login function");
+}

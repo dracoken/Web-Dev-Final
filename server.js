@@ -4,16 +4,20 @@ const app = express();
 const port = 3000;
 
 //look up how to do a delivery of static content on express
-/*
-app.use()
-{
+//app.use(express.static('public'));
+app.use('/assests', express.static(path.join(__dirname, '/public')));
 
-}
-*/
 app.get("/", (req,res) =>
 {
-    res.sendFile(path.join(__dirname+"/LoginAndRegistration/index.html"));
+    //index = fetch()
+    res.sendFile(path.join(__dirname , 'public/htmlFiles/index.html'));
+    //res.sendFile(path.join(__dirname+"/LoginAndRegistration/index.html"));
 })
+
+//ToDo
+app.post("/register", (req,res) => {
+    const regDetails = req.body();
+});
 
 app.listen(port)
 {
