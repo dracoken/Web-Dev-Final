@@ -1,0 +1,32 @@
+body {
+    background-image: url('/public/imageFiles/BackgroundCombat.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+#attack {
+
+    background-color: red;
+    border: 1px solid black;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 10px;
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+}
+#surrender {
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 10px;
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
+}
