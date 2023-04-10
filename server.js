@@ -6,7 +6,7 @@ app.get("/", (req,res) =>
 {
     console.log("test");
     //res.send("/pages/index.html");
-    res.render("/pages/index.html");
+    res.render("/public/combatScene.html");
 })
 
 app.listen(port)
