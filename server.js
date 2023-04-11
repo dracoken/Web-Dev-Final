@@ -18,7 +18,7 @@ app.use('/assests', express.static(path.join(__dirname, '/public')));
 app.get("/", (req,res) =>
 {
     //index = fetch()
-    res.sendFile(path.join(__dirname , 'public/htmlFiles/index.html'));
+    res.sendFile(path.join(__dirname , 'public/htmlFiles/combatScene.html'));
     //res.sendFile(path.join(__dirname+"/LoginAndRegistration/index.html"));
 })
 
