@@ -29,23 +29,23 @@
 
         <div class="form-box login">
             <h2>Login</h2>
-            <form>
+            <form action="#">
                 <div class="input-box">
                     <span class="icon">
                         <ion-icon name="mail"></ion-icon>
                     </span>
-                    <input type="email" required>
-                    <label>Email</label>
+                    <input id="loginUsername" type="text" required>
+                    <label>Username</label>
                 </div>
                 <div class="input-box">
                     <span class="icon">
                         <ion-icon name="lock-closed"></ion-icon>
                     </span>
-                    <input type="password" required>
+                    <input id="loginPassword" type="password" required>
                     <label>Password</label>
                 </div>
                 <div class="remember-forgot">
-                    <label><input type="checkbox"> Remember me</label>
+                    <label><input id="rememberLogin" type="checkbox"> Remember me</label>
                     <a href="#">Forgot Password?</a>
                 </div>
                 <button id="loginBtn" type="submit" class="btn" onclick="login()">Login</button>
@@ -57,30 +57,23 @@
 
         <div class="form-box register">
             <h2>Registration</h2>
-            <form action="#">
+            <form id="regForm" action="#">
                 <div class="input-box">
                     <span class="icon">
                         <ion-icon name="person"></ion-icon>
                     </span>
-                    <input type="text" required>
+                    <input id="registerUsername" type="text" required>
                     <label>Username</label>
-                </div>
-                <div class="input-box">
-                    <span class="icon">
-                        <ion-icon name="mail"></ion-icon>
-                    </span>
-                    <input type="email" required>
-                    <label>Email</label>
                 </div>
                 <div class="input-box">
                     <span class="icon">
                         <ion-icon name="lock-closed"></ion-icon>
                     </span>
-                    <input type="password" required>
+                    <input id="registerPassword" type="password" required>
                     <label>Password</label>
                 </div>
                 <div class="remember-forgot">
-                    <label><input type="checkbox"> I agree to the terms & conditions</label>
+                    <label><input id="agreeToConditions" type="checkbox"> I agree to the terms & conditions</label>
                 </div>
                 <button id="registerBtn" type="submit" class="btn" onclick="register()">Register</button>
                 <div class="login-register">

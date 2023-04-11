@@ -11,43 +11,24 @@ datasource db {
 }
 
 model User {
-  id       Int        @id @unique @default(autoincrement())
-  userName String     @unique
-  password String
-  //stageHighScore Int? //we can easily make these to into defaults of 1 and 'joe' respectivly, if we so chosed
-  //characterHS    String?
-  player   Character?
-}
+  id        Int    @id @unique @default(autoincrement())
+  userName  String @unique
+  password  String
+  hp        Int    @default(100)
+  currentHp Int    @default(100)
+  str       Int    @default(10)
+  def       Int    @default(3)
+  dex       Int    @default(4)
 
-model Character {
-  id           Int    @id @unique @default(autoincrement())
-  name         String
-  hp           Int    @default(100)
-  currentHp    Int    @default(100)
-  str          Int    @default(10)
-  def          Int    @default(3)
-  dex          Int    @default(4)
-  //stageNum      Int    @default(1)
-  //enemy         Json? //will require us to check to if enemy is either nonexistant or dead. if either are true then update the database with a new enemy json file
-  account      User   @relation(fields: [accountId], references: [id]) //this is the account that the user plays with
-  accountId    Int    @unique
-  matchConnect Match  @relation(fields: [matchId], references: [id]) //this is the battle that the user is part taking in
-  matchId      Int
+  matchConnect Match? @relation(fields: [matchId], references: [id])
+  matchId      Int? //two players have to be in a game at the same time to play, therefore match id can't be unique
 }
-
-//model enemy {
-//  id   Int    @id @unique @default(autoincrement())
-//  name String
-//  hp   Int    @default(10)
-//  str  Int    @default(2)
-//  def  Int    @default(0)
-//}
 
 model Match {
-  id           Int         @unique @default(autoincrement()) //primary key for our combats
-  players      Character[] //we need to limit this to only 2 players
-  player1First Boolean     @default(true) //we check these values to see who gose first in combat. if = false, then player2 gose first. we calculate who gose first on the client side, and update it here at the start of a match
-  player1Turn  Boolean     @default(true) //used to determine whos turn it is currently in a match. if = true, its player1's turn. if = false its player2's turn
-  matchStarted Boolean     @default(false) //used to check if a match is occurring. if this = true, we create another match and throw the next 2 players in here to make our next game
-  matchDone    Boolean     @default(false)
+  id           Int     @id @unique @default(autoincrement()) //primary key for our combats
+  players      User[]
+  player1First Boolean @default(true) //we check these values to see who gose first in combat. if = false, then player2 gose first. we calculate who gose first on the client side, and update it here at the start of a match
+  player1Turn  Boolean @default(true) //used to determine whos turn it is currently in a match. if = true, its player1's turn. if = false its player2's turn
+  matchStarted Boolean @default(false) //used to check if a match is occurring. if this = true, we create another match and throw the next 2 players in here to make our next game
+  matchDone    Boolean @default(false)
 }
