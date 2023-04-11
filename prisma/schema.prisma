@@ -44,9 +44,10 @@ model Character {
 //}
 
 model Match {
-  id            Int         @unique @default(autoincrement()) //primary key for our combats
-  players       Character[] //we need to limit this to only 2 players
-  player1First  Boolean     @default(true) //we check these values to see who gose first in combat. if = false, then player2 gose first. we calculate who gose first on the client side, and update it here at the start of a match
-  player1Turn   Boolean     @default(true) //used to determine whos turn it is currently in a match. if = true, its player1's turn. if = false its player2's turn
-  combatStarted Boolean     @default(false) //used to check if a match is occurring. if this = true, we create another match and throw the next 2 players in here to make our next game
+  id           Int         @unique @default(autoincrement()) //primary key for our combats
+  players      Character[] //we need to limit this to only 2 players
+  player1First Boolean     @default(true) //we check these values to see who gose first in combat. if = false, then player2 gose first. we calculate who gose first on the client side, and update it here at the start of a match
+  player1Turn  Boolean     @default(true) //used to determine whos turn it is currently in a match. if = true, its player1's turn. if = false its player2's turn
+  matchStarted Boolean     @default(false) //used to check if a match is occurring. if this = true, we create another match and throw the next 2 players in here to make our next game
+  matchDone    Boolean     @default(false)
 }
