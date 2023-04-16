@@ -52,7 +52,6 @@ iconClose.addEventListener('click', ()=> {
     wrapper.classList.remove('active');
 });
 
-//can't figure out how to put a response to aleart if reg attempt is failure or sucessful.
 // also We need to be able to prevent the default behaviour of the form on a failure
 //so far the method dose in fact checks with the db, if the username has been taken already or not
 async function register()
@@ -62,8 +61,8 @@ async function register()
     let registerPassword = regPassword.value;
     //console.log("username = " + testUsername);
     //console.log("password = "+ testPassword);
-    //alert("testing"); //alerts work outside the promise, but not inside them? 
 
+    //still needs to prevent on submit form behavior on bad input, but i got the response for both done
     const registerAttempt = await fetch("/register",
     {
         method:"POST",
@@ -75,17 +74,19 @@ async function register()
             "password":registerPassword,
 
         }),
-    }).then(res => {
-        if(!res.ok)
-        {
-            //regForm.onsubmit = "return false";
-            console.log("error");
-            return res.json();
-
-        }
-    }).then((data) => {
-        console.log(data.error);
     });
+    if(registerAttempt.status === 200)
+    {
+        const message = await registerAttempt.json();
+        alert("Sign up was successful, please now sign in");
+        console.log(message.success);
+    }
+    if(registerAttempt.status === 400)
+    {
+        const errorMessage = await registerAttempt.json();
+        console.log(errorMessage.error);
+        alert("User name is taken");
+    }
 }
 
 
@@ -96,16 +97,98 @@ async function register()
 
 // });
 
-//it still needs some UI changes to show that there has been an invaild login, however it talks to the server properly
 //and also we have to stop the default behavior of the form, if we do see an invaild login occur
-function login()
+async function login()
 {
     console.log("in login function");
     const logAttemptUsername = loginUsername.value;
     const logAttemptPassword = loginPassword.value;
+    
+    
+    //test code for when the game is ended abruptly. ie if a player exits the website mid match
+    /*
+    const abruptEnd = await fetch("/abruptGameEnd", 
+    {
+        method:"POST",
+        headers:
+        {
+            "Content-Type":"application/json",
+        },
+        body:JSON.stringify({
+            id:2
+        })
+    });
+    
+    if(abruptEnd.status === 200) //the only thing i changed her to make this work. is that in the api route, i changed it so that the response data where i put res.status.json all in the same line as the return statement
+    {
+        //this happens when the api route goes through sucessfully, but since this happens when a match ends unexpectly its still consisdered an error 
+        //alert("test");
+        //console.log("come here");
+        const errorMessage = await abruptEnd.json();
+        console.log(errorMessage.error);
+    }
+    if(abruptEnd.status === 400)
+    {
+        const errorMessage = await abruptEnd.json()
+        console.log(errorMessage.error);
+    }
+    */
+
+
+    /*
+    //test code for getting the player's current hp. it currently just returns the entire user info. i can later change it to return just the current hp
+    const grabingCurrentHp = await fetch(`/getCurrentHp/${logAttemptUsername}`,
+    {
+        method: "GET",
+        headers:
+        {
+            "Content-Type":"application/json",
+        },
+    });
+    
+    if(grabingCurrentHp.status === 200)
+    {
+        const message = await grabingCurrentHp.json();
+        console.log(message.hp);
+    }
+    if(grabingCurrentHp.status === 400)
+    {
+        const errorMessage = await grabingCurrentHp.json();
+        console.log(errorMessage.error);
+    }
+    */
+
+    /*
+    //test code for using the api route that changes the hp of the players
+    const changeHp = await fetch("/changeCurrentHp",
+    {
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json",
+        },
+        body:JSON.stringify({
+            "username":logAttemptUsername, //username of the player whos hp you trying to change
+            "hp":20, //some value that calculated to represent the actually hp
+        }),
+    });
+
+    if(changeHp.status === 200)
+    {
+        const message = await changeHp.json();
+        console.log(message.success);
+    }
+    if(changeHp.status === 400)
+    {
+        const errorMessage = await changeHp.json();
+        console.log(errorMessage.error);
+    }
+    */
+    
+
+
     /*
         //below is test code for match making
-    const matchMaking = fetch("/findGame",
+    const matchMaking = await fetch("/findGame",
     {
         method:"POST",
         headers:{            
@@ -115,14 +198,31 @@ function login()
             "username":logAttemptUsername,
         }),
     });
+    if(matchMaking.status === 200)
+    {
+        const message = await matchMaking.json();
+        console.log(message.success);
+    }
+    if(matchMaking.status === 400)
+    {
+        const errorMessage = await matchMaking.json();
+        console.log(errorMessage.error);
+    }
     */
 
     //below all works im just testing if my api route works
-    const loginAttempt = fetch(`/login/${logAttemptUsername}/${logAttemptPassword}`);
-    console.log(loginAttempt);
-    if(loginAttempt.status == 400)
+    const loginAttempt = await fetch(`/login/${logAttemptUsername}/${logAttemptPassword}`);
+    if(loginAttempt.status === 400)
     {
+        const errorMessage = await loginAttempt.json();
+        console.log(errorMessage.error);
         alert("invaild username or password");
+    }
+    if(loginAttempt.status === 200)
+    {
+        const message = await loginAttempt.json();
+        //console.log(message);
+        console.log(message.success);
     }
 
 }
