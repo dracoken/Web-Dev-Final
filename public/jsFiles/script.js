@@ -103,8 +103,23 @@ function login()
     console.log("in login function");
     const logAttemptUsername = loginUsername.value;
     const logAttemptPassword = loginPassword.value;
+    /*
+        //below is test code for match making
+    const matchMaking = fetch("/findGame",
+    {
+        method:"POST",
+        headers:{            
+            "Content-Type": "application/json",
+        },
+        body:JSON.stringify({
+            "username":logAttemptUsername,
+        }),
+    });
+    */
 
+    //below all works im just testing if my api route works
     const loginAttempt = fetch(`/login/${logAttemptUsername}/${logAttemptPassword}`);
+    console.log(loginAttempt);
     if(loginAttempt.status == 400)
     {
         alert("invaild username or password");
