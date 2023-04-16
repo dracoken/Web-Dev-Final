@@ -33,6 +33,10 @@ app.post("/register",express.json(), async (req,res) => {
     let requestPassword = req.body.password;
     //console.log("requestUsername = " + requestUsername);
     //console.log("requestPassword = " + requestPassword);
+    if(req.method != "POST")
+    {
+        return res.status(400).json({error:"invaild rest method"});
+    }
 
     try
     {
@@ -44,13 +48,12 @@ app.post("/register",express.json(), async (req,res) => {
             }
         })
         console.log(newAccount);
-        res.status(200);
+        return res.status(200).json({success:"signed up successfully"});
     }
     catch(error)
     {
-        console.log("dup username");
-        res.status(400).json({error:"username is already taken"});
-        return;
+        //console.log("dup username");
+        return res.status(400).json({error:"username is already taken"});
     }
 });
 
@@ -70,19 +73,17 @@ app.get("/login/:username/:password", express.json(), async (req,res) =>
                 password:loginPassword,
             }
         });
-        console.log(loginAttempt);
+        //console.log(loginAttempt);
         if(loginAttempt == null)
         {
             throw new error;
         }
-        res.status(200).json({data:loginAttempt});
+        return res.status(200).json({success: "loged in successfully"});
+        //return res.status(200).json(loginAttempt); //returns all the data of the user, including the password
     }
     catch(error)
     {
-        console.log("invaild credentials");
-        res.status(400).json({error:"invaild credentials"});
-        return;
-
+        return res.status(400).json({error:"invaild credentials"});
     } 
 });
 
@@ -105,8 +106,7 @@ app.post("/findGame", express.json(), async (req,res)=>{
     if(player == null) //case where player dosen't exist
     {
         console.log("player dosen't exist");
-        res.status(404).json({error: "user dosen't exist in db"}); //should this be a status of 400 or 404?
-        return;
+        return res.status(404).json({error: "user dosen't exist in db"}); //should this be a status of 400 or 404?
     }
     //console.log(player); //it grabs the player correctly
 
@@ -125,7 +125,7 @@ app.post("/findGame", express.json(), async (req,res)=>{
     //console.log(availableGame);
     if(availableGame == null) //case in which no games exists(we create new game and update it with the queuedPlayer)
     {
-        console.log("inside no game abvailble case");
+        //console.log("inside no game abvailble case");
         newGame = await prisma.Match.create({
             data: {
                 matchStarted: false,
@@ -144,13 +144,11 @@ app.post("/findGame", express.json(), async (req,res)=>{
             }
         });
         console.log(newGame); //it creates a new match with the queue player in it, in the case where no abavile matches are present
-        res.status(200).json({error:"match dosen't have enough players to start the match, waiting on second player to join"});
-        return;
+        return res.status(200).json({success:"match dosen't have enough players to start the match, waiting on second player to join"});
     }
     if(availableGame.players[0].userName == requestUsername) //checks if player is trying to join the same match for the second time, and rejects the request
     {
-        res.status(400).json({error:"player can't join the same game twice"});
-        return;
+        return res.status(400).json({error:"player can't join the same game twice"});
     }
 
     newGame = await prisma.Match.update({ //adds the new player into the match
@@ -174,11 +172,133 @@ app.post("/findGame", express.json(), async (req,res)=>{
             }
         },
     });
-    res.status(200).json({success:"match has started"});
-    return;
     //console.log(newGame);
+    return res.status(200).json({success:"match has started"});
 });
 
+app.get("/getCurrentHp/:username", express.json(), async (req,res)=>{
+    //console.log("in getCurrentHp call");
+    const playerUsername = req.params.username;
+    console.log("playerUsername = " + playerUsername);
+
+    const player = await prisma.User.findUnique({
+        where:
+        {
+            userName:playerUsername,
+        },
+        select:
+        {
+            userName: true,
+            currentHp: true,
+            str: true,
+            def: true,
+            dex: true,
+            matchId: true,
+        }
+    });
+    console.log(player);
+    if(player == null)
+    {
+        return res.status(400).json({error:"player dosen't exist"});
+    }
+    return res.status(200).json({hp:player.currentHp});
+    //return res.status(200).json({player});
+});
+
+app.post("/changeCurrentHp", express.json(), async (req,res) =>{
+    const playerUserName = req.body.username;
+    const playerNewHP = req.body.hp;
+    let playerUpdate;
+    //console.log("player username = " + playerUserName);
+    //console.log("hp sent = " + playerNewHP);
+    if(req.method != "POST")
+    {
+        return res.status(400).json({error: "wrong method"});
+    }
+    const player = await prisma.User.findUnique({
+        where:
+        {
+            userName:playerUserName,
+        }
+    });
+    if(player == null)
+    {
+        return res.status(400).json({error: "player can't be found"});
+    }
+
+    if(playerNewHP <= 0)
+    {
+        playerUpdate = await prisma.User.update({ //updates the user's hp to the hp that was assigned to in the fetch request
+            where:
+            {
+                userName: playerUserName,
+            },
+            data:
+            {
+                currentHp:player.hp, //change this to the player original value
+            },
+        });
+
+        matchUpdate = await prisma.Match.update({
+            where:
+            {
+                id: player.matchId,
+            },
+            data:
+            {
+                matchStarted: true,
+                matchDone: true,
+            }
+        });
+        return res.status(200).json({success: "match done"});
+    }
+
+    playerUpdate = await prisma.User.update({ //updates the user's hp to the hp that was assigned to in the fetch request
+        where:
+        {
+            userName: playerUserName,
+        },
+        data:
+        {
+            currentHp: parseInt(playerNewHP),
+        },
+    });
+    //console.log(playerUpdate);
+    return res.status(200).json({success:"hp changed successfully"});
+});
+
+app.post("/abruptGameEnd", express.json(), async (req,res)=>{ //changes the 
+    const gameId = req.body.id;
+    let game;
+
+    if(req.method != "POST")
+    {
+        return res.status(400).json({error:"wrong method type"});
+    }
+
+    game = await prisma.Match.findUnique({
+        where: 
+        {
+            id:gameId,
+        }
+    });
+    if(game == null)
+    {
+        res.status(400).json({error: "match dosen't exist"});
+        return;
+    }
+    game = await prisma.Match.update({
+        where:
+        {
+            id: gameId,
+        },
+        data:
+        {
+            matchDone: true,
+        }
+    });
+    return res.status(200).json({error:"game ended abruptly, cancelling game"});    
+});
 
 app.listen(port)
 {
