@@ -3,20 +3,26 @@
     <html>
       <head>
         <title>GameNameHereHEHE</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/assests/cssFiles/combat.css">
       </head>
-      <script src="/public/jsFiles/combatScript.js"></script>
       <body>
         <!-- Players -->
-        <div id="left-player"></div>
-        <img src="/public/imageFiles/LeftCharImg.jpg" id="leftCharImg">
-        <div id="right-player"></div> 
-        <img src="/public/imageFiles/RightCharImg.png" id="rightCharImg">
+        <div id="left-player">
+        <img src="/assests/imageFiles/LeftCharImg.jpg" id="leftCharImg">
+        </div>
+        <div id="right-player">
+        <img src="/assests/imageFiles/RightCharImg.png" id="rightCharImg">
+        </div>
     
         <!-- Footer -->
-        <footer>
-          <button onclick="attack()" id = "attack">Attack</button>
+        <div id="UI">
+          <button onclick="attackChar()" id = "attack">Attack</button>
           <button onclick="surrender()" id = "surrender">Surrender</button>
-        </footer>
+        </div>
       </body>
+      <script src="/assests/jsFiles/combatScript.js"></script>
     </html>
     

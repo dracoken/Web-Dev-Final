@@ -8,6 +8,8 @@ const app = express();
 const port = 3000;
 const prisma = new PrismaClient();
 
+module.exports = { prisma }
+
 app.use(express.json());
 //app.use(express.json({extended: true, limit: '1mb'}));  // i dont think i need to restrict the data's size at all yet
 app.use(bodyParser.json());
