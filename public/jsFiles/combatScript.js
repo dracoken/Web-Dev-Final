@@ -185,8 +185,9 @@ async function main() {
 
 main()
 */
-function handleAttack(data) {
+function handleAttack(data, data2) {
   console.log(`attacking ${data.userName}`)
+  damage = data.str - data2.def
 }
 const myButton = document.getElementById("attackBtn");
   myButton.addEventListener("click", async () => {  
