@@ -185,13 +185,32 @@ async function main() {
 
 main()
 */
-function handleAttack(data, data2) {
-  console.log(`attacking ${data.userName}`)
-  damage = data.str - data2.def
+let player1Data,player2Data
+async function handleAttack(player1Data, player2Data) {
+  console.log(`${player1Data.playerData.userName} is attacking ${player2Data.playerData.userName}`)
+  //console.log(player1Data.playerData.str)
+  damage = player1Data.playerData.str - player2Data.playerData.def
+  let remaining = player2Data.playerData.currentHp - damage
+  console.log(`${player1Data.playerData.userName} dealt ${damage} damage to ${player2Data.playerData.userName}`)
+
+  const updateHp = await fetch("/changeCurrentHp",
+  {  
+    method:"POST" ,
+    headers: 
+    {
+      "Content-Type":"application/json",
+    },
+    body:JSON.stringify
+    ({
+      username: "test2",
+      hp: remaining,
+    })
+
+  })
 }
 const myButton = document.getElementById("attackBtn");
   myButton.addEventListener("click", async () => {  
-
+   
   const grabingCurrentHp = await fetch("/getCurrentHp/test1",
     {
         method: "GET",
@@ -204,9 +223,8 @@ const myButton = document.getElementById("attackBtn");
     if(grabingCurrentHp.status === 200)
     {
         
-        const data = await grabingCurrentHp.json();
-        handleAttack(data);
-        console.log(data.playerData);
+        player1Data = await grabingCurrentHp.json();
+        console.log(player1Data.playerData);
     }
     if(grabingCurrentHp.status === 400)
     {
@@ -225,14 +243,17 @@ const myButton = document.getElementById("attackBtn");
     
     if(grabingCurrentHpEnemy.status === 200)
     {
-        const data2 = await grabingCurrentHpEnemy.json();
-        console.log(data2.playerData);
+       player2Data = await grabingCurrentHpEnemy.json();
+        console.log(player2Data.playerData);
     }
     if(grabingCurrentHpEnemy.status === 400)
     {
         const errMessage = await grabingCurrentHpEnemy.json();
         console.log(errMessage.error);
     }
+    handleAttack(player1Data, player2Data);
+
+
   });
   
     
