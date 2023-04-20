@@ -8,8 +8,6 @@ const app = express();
 const port = 3000;
 const prisma = new PrismaClient();
 
-module.exports = { prisma }
-
 app.use(express.json());
 //app.use(express.json({extended: true, limit: '1mb'}));  // i dont think i need to restrict the data's size at all yet
 app.use(bodyParser.json());
@@ -203,7 +201,7 @@ app.get("/getCurrentHp/:username", express.json(), async (req,res)=>{
     {
         return res.status(400).json({error:"player dosen't exist"});
     }
-    return res.status(200).json({hp:player.currentHp});
+    return res.status(200).json({playerData:player});
     //return res.status(200).json({player});
 });
 
@@ -308,3 +306,36 @@ app.listen(port)
 }
 
 //we will just do the rest of the api routes in here
+/*
+async function handleAttack() {
+    const match = await prisma.match.findFirst({ where: { matchDone: false } })
+    const [attacker, defender] = match.players
+  
+    const damage = calculateDamage(attacker.strength, defender.defense)
+    const updatedHp = defender.hp - damage
+  
+    await prisma.user.update({
+      where: { id: defender.id },
+      data: { hp: updatedHp }
+    })
+  
+    console.log(`Attacker ${attacker.name} dealt ${damage} damage to Defender ${defender.name}`)
+  
+  
+    function calculateDamage(attackerStrength, defenderDefense) {
+      const damage = attackerStrength - defenderDefense
+      return Math.max(0, damage)
+    }
+    await prisma.match.update({
+      where: { id: match.id },
+      data: { player1Turn: !match.player1Turn },
+    })
+    if (newHealth === 0) {
+      await prisma.match.update({
+        where: { id: match.id },
+        data: { matchDone: true },
+      })
+      console.log(`${defender.name} has been defeated!`)
+    }
+  }
+*/

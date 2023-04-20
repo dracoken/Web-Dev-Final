@@ -42,7 +42,7 @@ body {
     justify-content: space-between;
     display: flex;
 }
-#attack {
+#attackBtn {
 
     background-color: red;
     border: 1px solid black;
