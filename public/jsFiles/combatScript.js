@@ -144,7 +144,8 @@ myButton.addEventListener("click", async () => {
   });
 
   const surrender = document.getElementById("surrenderBtn");
-  myButton.addEventListener("click", async () => {
+  surrender.addEventListener("click", async () => {
+    log("surrender")
     const abruptEnd = await fetch("/abruptGameEnd", 
     {
         method:"POST",

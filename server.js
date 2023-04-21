@@ -297,6 +297,7 @@ app.post("/abruptGameEnd", express.json(), async (req,res)=>{ //changes the
             matchDone: true,
         }
     });
+    console.log(game)
     const player1 = game.players[0];
     const player2 = game.players[1];
     console.log("testing if get player 1 inside match")
