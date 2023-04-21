@@ -284,7 +284,7 @@ app.post("/abruptGameEnd", express.json(), async (req,res)=>{ //changes the
     });
     if(game == null)
     {
-        res.status(400).json({error: "match dosen't exist"});
+        res.status(400).json({error: "match doesn't exist"});
         return;
     }
     game = await prisma.Match.update({
@@ -297,6 +297,10 @@ app.post("/abruptGameEnd", express.json(), async (req,res)=>{ //changes the
             matchDone: true,
         }
     });
+    const player1 = game.players[0];
+    const player2 = game.players[1];
+    console.log("testing if get player 1 inside match")
+    console.log(player1);
     return res.status(200).json({error:"game ended abruptly, cancelling game"});    
 });
 

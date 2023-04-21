@@ -12,6 +12,18 @@ const button = document.getElementById('attackBtn')
 
 let player1Data,player2Data
 let player1, player2
+async function updateStats(player1Data, player2Data) {
+  console.log("updating player stats")
+  document.getElementById("atkname").innerHTML = player1Data.playerData.userName;
+  document.getElementById("atkhp").innerHTML = player1Data.playerData.currentHp;
+  document.getElementById("atkstr").innerHTML = player1Data.playerData.str;
+  document.getElementById("atkdef").innerHTML = player1Data.playerData.def;
+  document.getElementById("defname").innerHTML = player2Data.playerData.userName;
+  document.getElementById("defhp").innerHTML = player2Data.playerData.currentHp;
+  document.getElementById("defstr").innerHTML = player2Data.playerData.str;
+  document.getElementById("defdef").innerHTML = player2Data.playerData.def;
+  console.log("Stats updated");
+}
 
 window.onload = async function(player1,player2) {
   const playerStats1 = await fetch("/getCurrentHp/test1", 
@@ -44,6 +56,7 @@ window.onload = async function(player1,player2) {
 
     if (playerStats2.status == 200) {
       player2 = await playerStats2.json();
+      console.log(player2)
     }
     if(playerStats2.status === 400)
     {
@@ -55,17 +68,7 @@ window.onload = async function(player1,player2) {
     updateStats(player1, player2)
   };
 
-async function updateStats(player1Data, player2Data) {
-  console.log("updating player stats")
-  document.getElementById("atkname").innerHTML = player1Data.playerData.userName;
-  document.getElementById("atkhp").innerHTML = player1Data.playerData.currentHp;
-  document.getElementById("atkstr").innerHTML = player1Data.playerData.str;
-  document.getElementById("atkdef").innerHTML = player1Data.playerData.def;
-  document.getElementById("defname").innerHTML = player2Data.playerData.userName;
-  document.getElementById("defhp").innerHTML = player2Data.playerData.currentHp;
-  document.getElementById("defstr").innerHTML = player2Data.playerData.str;
-  document.getElementById("defdef").innerHTML = player2Data.playerData.def;
-}
+
 
 
 async function handleAttack(player1Data, player2Data) {
@@ -135,8 +138,8 @@ myButton.addEventListener("click", async () => {
         const errMessage = await grabingCurrentHpEnemy.json();
         console.log(errMessage.error);
     }
-    handleAttack(player1Data, player2Data);
-    updateStats(player1Data,player2Data);
+    await handleAttack(player1Data, player2Data);
+    await updateStats(player1Data,player2Data);
 
   });
 
@@ -150,7 +153,7 @@ myButton.addEventListener("click", async () => {
             "Content-Type":"application/json",
         },
         body:JSON.stringify({
-            id:2
+            id:1
         })
     });
     
