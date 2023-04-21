@@ -20,7 +20,7 @@ app.get("/", (req,res) =>
 {
     //index = fetch()
     res.sendFile(path.join(__dirname , 'public/htmlFiles/combatScene.html'));
-    //res.sendFile(path.join(__dirname+"/LoginAndRegistration/index.html"));
+    //res.sendFile(path.join(__dirname, "public/htmlFiles/index.html"));
 })
 
 app.post("/register",express.json(), async (req,res) => {
@@ -304,38 +304,3 @@ app.listen(port)
 {
     console.log("listiening on port " + port);
 }
-
-//we will just do the rest of the api routes in here
-/*
-async function handleAttack() {
-    const match = await prisma.match.findFirst({ where: { matchDone: false } })
-    const [attacker, defender] = match.players
-  
-    const damage = calculateDamage(attacker.strength, defender.defense)
-    const updatedHp = defender.hp - damage
-  
-    await prisma.user.update({
-      where: { id: defender.id },
-      data: { hp: updatedHp }
-    })
-  
-    console.log(`Attacker ${attacker.name} dealt ${damage} damage to Defender ${defender.name}`)
-  
-  
-    function calculateDamage(attackerStrength, defenderDefense) {
-      const damage = attackerStrength - defenderDefense
-      return Math.max(0, damage)
-    }
-    await prisma.match.update({
-      where: { id: match.id },
-      data: { player1Turn: !match.player1Turn },
-    })
-    if (newHealth === 0) {
-      await prisma.match.update({
-        where: { id: match.id },
-        data: { matchDone: true },
-      })
-      console.log(`${defender.name} has been defeated!`)
-    }
-  }
-*/

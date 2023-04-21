@@ -8,7 +8,7 @@ body {
     'header header header'
     'leftChar middle rightChar'
     'foot foot foot' ;
-    grid-template-rows: 10% 40% 40%;
+    grid-template-rows: 10% 45% 35%;
     grid-template-columns: 33% 34% 33%;
     height: 100%;
     width: 100%;
@@ -19,16 +19,17 @@ body {
 #left-player {
     grid-area: leftChar;
     width: 220px;
-    margin-left: 100px;
+    margin-left: 150px;
 }
 #rightCharImg{
     grid-area: leftChar;
-    width: 80%;
-    margin-top: 100px;
+    width: 75%;
+    margin-top: 190px;
     
 }
 #leftCharImg {
     grid-area: rightChar;
+    margin-top: 190px;
     width:100%;
 }
 #right-player {
@@ -36,13 +37,13 @@ body {
     -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
     z-index: -1;
-    margin-right: 100px;
+    margin-right: 150px;
 }
 #UI {
     grid-area: foot;
     margin-left: 50px;
     border: 3px solid black;
-    margin-top: 100px;
+    margin-top: 120px;
     margin-right: 50px;
     height: 45%;
     background-color: burlywood;
@@ -68,7 +69,7 @@ body {
     color: white;
     font-weight: bold;
     font-size: 30px;
-    padding: 50px;
+    padding: 30px;
     padding-left: 80px;
     padding-right: 80px;
     text-align: center;
@@ -84,7 +85,7 @@ body {
     color: black;
     font-weight: bold;
     font-size: 30px;
-    padding: 50px;
+    padding: 30px;
     
     text-align: center;
     text-decoration: none;
@@ -95,7 +96,7 @@ body {
 }
 #console {
     position: fixed;
-    bottom: 220px;
+    bottom: 190px;
     left: 400px;
     padding: 10px;
     font-size: 20px;
