@@ -8,7 +8,7 @@ body {
     'header header header'
     'leftChar middle rightChar'
     'foot foot foot' ;
-    grid-template-rows: 10% 60% 20%;
+    grid-template-rows: 10% 40% 40%;
     grid-template-columns: 33% 34% 33%;
     height: 100%;
     width: 100%;
@@ -18,11 +18,14 @@ body {
   }
 #left-player {
     grid-area: leftChar;
-    width: 100%;
+    width: 220px;
+    margin-left: 100px;
 }
 #rightCharImg{
     grid-area: leftChar;
-    width: 100%;
+    width: 80%;
+    margin-top: 100px;
+    
 }
 #leftCharImg {
     grid-area: rightChar;
@@ -30,17 +33,32 @@ body {
 }
 #right-player {
     grid-area: rightChar;
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    z-index: -1;
+    margin-right: 100px;
 }
 #UI {
     grid-area: foot;
     margin-left: 50px;
     border: 3px solid black;
+    margin-top: 100px;
     margin-right: 50px;
     height: 45%;
     background-color: burlywood;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
     display: flex;
+}
+#statsatk,#statsdef {
+    grid-area: foot;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    height: 50%;
+    line-height: .01;
+    flex-direction: column;
+    font-weight: bold;
 }
 #attackBtn {
 
@@ -49,30 +67,42 @@ body {
     border-radius: 5px;
     color: white;
     font-weight: bold;
-    padding: 10px;
+    font-size: 30px;
+    padding: 50px;
+    padding-left: 80px;
+    padding-right: 80px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    margin: 10px;
-    margin-left: 40px;
     background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
-    width: 85px;
-    height: 50px;
 }
-#surrender {
+#surrenderBtn {
 
     background-color: white;
     border: 1px solid black;
     border-radius: 5px;
     color: black;
     font-weight: bold;
-    padding: 10px;
+    font-size: 30px;
+    padding: 50px;
+    
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    margin: 10px;
-    margin-right: 40px;
+    margin-left: 40px;
     background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%);
-    height: 50px;
-    width: 100px;
+
 }
+#console {
+    position: fixed;
+    bottom: 220px;
+    left: 400px;
+    padding: 10px;
+    font-size: 20px;
+    border: 3px solid #ccc;;
+    border-color: black;
+    background-color: burlywood;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.75 ease-in-out;
+  }

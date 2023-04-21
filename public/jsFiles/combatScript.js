@@ -8,190 +8,72 @@ const rightPic = document.querySelector('#rightCharImg');
 let leftPic = document.querySelector("#leftCharImg");
 
 const button = document.getElementById('attackBtn')
-
-  button.addEventListener('click', async () => {
-  try {
-    const updatedCharacter = await handleAttack()
-    console.log(updatedCharacter)
-  } catch (error) {
-    console.error(error)
-  }
-})
-async function handleAttack() {
-  const match = await prisma.match.findFirst({ where: { matchDone: false } })
-  const [attacker, defender] = match.players
-
-  const damage = calculateDamage(attacker.strength, defender.defense)
-  const updatedHp = defender.hp - damage
-
-  await prisma.user.update({
-    where: { id: defender.id },
-    data: { hp: updatedHp }
-  })
-
-  console.log(`Attacker ${attacker.name} dealt ${damage} damage to Defender ${defender.name}`)
-
-
-  function calculateDamage(attackerStrength, defenderDefense) {
-    const damage = attackerStrength - defenderDefense
-    return Math.max(0, damage)
-  }
-  await prisma.match.update({
-    where: { id: match.id },
-    data: { player1Turn: !match.player1Turn },
-  })
-  if (newHealth === 0) {
-    await prisma.match.update({
-      where: { id: match.id },
-      data: { matchDone: true },
-    })
-    console.log(`${defender.name} has been defeated!`)
-  }
-}
-/*
-async function attackChar(charID) {
-    const player = await prisma.User.findUnique({
-      where: { id: charID},
-      select: { hp: true, def: true, str: true, currenHp: true },
-    });
-    let hpDifference = character.str - character.def
-    if (hpDifference <= 0){
-      hpDifference = 0;
-    }
-
-    const newHp = character.currentHp - hpDifference
-
-    const updatedObject = await prisma.Character.update({
-      where: { id : charID },
-      data: { currentHp: newHp },
-    });
-  
-    return updatedObject;
-  }
-
-  async function surrenderGame() {
-
-  }
-  const button = document.getElementById('attackBtn')
-  button.addEventListener('click', async () => {
-  try {
-    const updatedCharacter = await attackChar(charID)
-    console.log(updatedCharacter)
-  } catch (error) {
-    console.error(error)
-  }
-})
-  // combat.js
-
-const { PrismaClient } = require('@prisma/client')
-
-const prisma = new PrismaClient()
-
-// Get the two players from the database
-const player1 = await prisma.user.findUnique({ where: { id: 1 } })
-const player2 = await prisma.user.findUnique({ where: { id: 2 } })
-
-// Initialize the match with the two players
-const match = await prisma.match.create({
-  data: {
-    players: { connect: [{ id: player1.id }, { id: player2.id }] },
-    player1First: true,
-    player1Turn: true,
-    matchStarted: true,
-    matchDone: false,
-  },
-})
 */
 
-/*
-// Function to handle an attack by one player on the other
-const handleAttack = async () => {
-  // Get the current health of the defender
-  const { health } = await prisma.user.findUnique({ where: { id: defender.id } })
-
-  // Calculate the damage based on the attacker's strength and the defender's defense
-  const damage = Math.max(0, attacker.strength - defender.defense)
-
-  // Calculate the new health of the defender after the attack
-  const newHealth = Math.max(0, health - damage)
-
-  // Update the defender's health in the database
-  await prisma.user.update({
-    where: { id: defender.id },
-    data: { health: newHealth },
-  })
-
-  // Switch turns
-  await prisma.match.update({
-    where: { id: match.id },
-    data: { player1Turn: !match.player1Turn },
-  })
-
-  // Check if the match is over
-  if (newHealth === 0) {
-    await prisma.match.update({
-      where: { id: match.id },
-      data: { matchDone: true },
-    })
-    console.log(`${defender.name} has been defeated!`)
-  }
-}
-
-// Function to handle a turn in the match
-const handleTurn = async () => {
-  const attacker = match.player1Turn ? player1 : player2
-  const defender = match.player1Turn ? player2 : player1
-
-  console.log(`${attacker.name}'s turn!`)
-
-  // Simulate the player selecting the "attack" button
-  await handleAttack(attacker, defender)
-}
-
-// Start the match
-while (!match.matchDone) {
-  await handleTurn()
-}
-
-// combat.js
-
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
-
-async function handleAttack() {
-  const match = await prisma.match.findFirst({ where: { matchDone: false } })
-  const [attacker, defender] = match.players
-
-  const damage = calculateDamage(attacker.strength, defender.defense)
-  const updatedHp = defender.hp - damage
-
-  await prisma.user.update({
-    where: { id: defender.id },
-    data: { hp: updatedHp }
-  })
-
-  console.log(`Attacker ${attacker.name} dealt ${damage} damage to Defender ${defender.name}`)
-}
-
-function calculateDamage(attackerStrength, defenderDefense) {
-  const damage = attackerStrength - defenderDefense
-  return Math.max(0, damage)
-}
-
-async function main() {
-  await handleAttack()
-  // add code to display updated player stats and switch turns
-}
-
-main()
-*/
 let player1Data,player2Data
+let player1, player2
+
+window.onload = async function(player1,player2) {
+  const playerStats1 = await fetch("/getCurrentHp/test1", 
+  {
+    method: "GET",
+    headers:
+    {
+      "Content-Type":"application/json",
+    },
+  });
+
+    if (playerStats1.status == 200) {
+      player1 = await playerStats1.json();
+      console.log(player1)
+    }
+    if(this.status === 400)
+    {
+        const errorMessage = await playerStats1.json();
+        console.log(errorMessage.error);
+    }
+    
+  const playerStats2 = await fetch("/getCurrentHp/test2", 
+  {
+    method: "GET",
+    headers:
+    {
+      "Content-Type":"application/json",
+    },
+  });
+
+    if (playerStats2.status == 200) {
+      player2 = await playerStats2.json();
+    }
+    if(playerStats2.status === 400)
+    {
+        const errorMessage = await playerStats2.json();
+        console.log(errorMessage.error);
+    }
+    
+
+    updateStats(player1, player2)
+  };
+
+async function updateStats(player1Data, player2Data) {
+  console.log("updating player stats")
+  document.getElementById("atkname").innerHTML = player1Data.playerData.userName;
+  document.getElementById("atkhp").innerHTML = player1Data.playerData.currentHp;
+  document.getElementById("atkstr").innerHTML = player1Data.playerData.str;
+  document.getElementById("atkdef").innerHTML = player1Data.playerData.def;
+  document.getElementById("defname").innerHTML = player2Data.playerData.userName;
+  document.getElementById("defhp").innerHTML = player2Data.playerData.currentHp;
+  document.getElementById("defstr").innerHTML = player2Data.playerData.str;
+  document.getElementById("defdef").innerHTML = player2Data.playerData.def;
+}
+
+
 async function handleAttack(player1Data, player2Data) {
   console.log(`${player1Data.playerData.userName} is attacking ${player2Data.playerData.userName}`)
   //console.log(player1Data.playerData.str)
   damage = player1Data.playerData.str - player2Data.playerData.def
   let remaining = player2Data.playerData.currentHp - damage
-  console.log(`${player1Data.playerData.userName} dealt ${damage} damage to ${player2Data.playerData.userName}`)
+  log(`${player1Data.playerData.userName} dealt ${damage} damage to ${player2Data.playerData.userName}`)
 
   const updateHp = await fetch("/changeCurrentHp",
   {  
@@ -208,8 +90,10 @@ async function handleAttack(player1Data, player2Data) {
 
   })
 }
+
+
 const myButton = document.getElementById("attackBtn");
-  myButton.addEventListener("click", async () => {  
+myButton.addEventListener("click", async () => {  
    
   const grabingCurrentHp = await fetch("/getCurrentHp/test1",
     {
@@ -252,8 +136,50 @@ const myButton = document.getElementById("attackBtn");
         console.log(errMessage.error);
     }
     handleAttack(player1Data, player2Data);
-
+    updateStats(player1Data,player2Data);
 
   });
+
+  const surrender = document.getElementById("surrenderBtn");
+  myButton.addEventListener("click", async () => {
+    const abruptEnd = await fetch("/abruptGameEnd", 
+    {
+        method:"POST",
+        headers:
+        {
+            "Content-Type":"application/json",
+        },
+        body:JSON.stringify({
+            id:2
+        })
+    });
+    
+    if(abruptEnd.status === 200) //the only thing i changed her to make this work. is that in the api route, i changed it so that the response data where i put res.status.json all in the same line as the return statement
+    {
+        //this happens when the api route goes through sucessfully, but since this happens when a match ends unexpectly its still consisdered an error 
+        //alert("test");
+        //console.log("come here");
+        log("Match Surrendered")
+        const errorMessage = await abruptEnd.json();
+        console.log(errorMessage.error);
+    }
+    if(abruptEnd.status === 400)
+    {
+        const errorMessage = await abruptEnd.json()
+        console.log(errorMessage.error);
+    }
+  });
+  // Function to display console messages on the HTML page
+function log(message) {
+  var consoleDiv = document.getElementById("console");
+  consoleDiv.innerHTML += message + "<br>";
+  consoleDiv.style.opacity = 1;
+
+  setTimeout(function() {
+    consoleDiv.style.opacity = 0;
+    consoleDiv.innerHTML = "";
+  }, 4000);
+}
+
   
     
