@@ -154,7 +154,7 @@ myButton.addEventListener("click", async () => {
             "Content-Type":"application/json",
         },
         body:JSON.stringify({
-            id:1
+            id:16 //this needs to be dynamically changing to be the match that the players are on
         })
     });
     

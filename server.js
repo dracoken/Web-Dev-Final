@@ -280,13 +280,26 @@ app.post("/abruptGameEnd", express.json(), async (req,res)=>{ //changes the
         where: 
         {
             id:gameId,
-        }
+        },
+       include:
+       {
+            players:true,
+       }
     });
+
     if(game == null)
     {
         res.status(400).json({error: "match doesn't exist"});
         return;
     }
+
+    const p1Name = game.players[0].userName;
+    const p1DefaultHp = game.players[0].hp;
+
+    const p2Name = game.players[1].userName;
+    const p2DefaultHp = game.players[1].hp;
+
+
     game = await prisma.Match.update({
         where:
         {
@@ -297,11 +310,28 @@ app.post("/abruptGameEnd", express.json(), async (req,res)=>{ //changes the
             matchDone: true,
         }
     });
-    console.log(game)
-    const player1 = game.players[0];
-    const player2 = game.players[1];
-    console.log("testing if get player 1 inside match")
-    console.log(player1);
+
+    const p1 = await prisma.User.update({ //resetting player1 to their default hp
+        where:
+        {
+            userName: p1Name,
+        },
+        data: 
+        {
+            currentHp: p1DefaultHp,
+        },
+    });
+
+    const p2 = await prisma.User.update({ //reseting player2 to their default hp
+        where: 
+        {
+            userName: p2Name,
+        },
+        data: 
+        {
+            currentHp: p2DefaultHp
+        },
+    });
     return res.status(200).json({error:"game ended abruptly, cancelling game"});    
 });
 
