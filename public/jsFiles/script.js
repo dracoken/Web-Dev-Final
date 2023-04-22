@@ -223,27 +223,28 @@ async function login()
         const message = await loginAttempt.json();
         //console.log(message);
         console.log(message.success);
-        const matchMaking = await fetch("/findGame",
-        {
-            method:"POST",
-            headers:{            
-                "Content-Type": "application/json",
-            },
-            body:JSON.stringify({
-                "username":logAttemptUsername,
-            }),
-        });
-        if(matchMaking.status === 200)
-        {
-            const message = await matchMaking.json();
-            console.log(message.success);
-        }
-        if(matchMaking.status === 400)
-        {
-            const errorMessage = await matchMaking.json();
-            console.log(errorMessage.error);
-        }
-        console.log("------");
-        console.log(matchMaking);
+        findMatch();
+    }
+}
+async function findMatch() {
+    const matchMaking = await fetch("/findGame",
+    {
+        method:"POST",
+        headers:{            
+            "Content-Type": "application/json",
+        },
+        body:JSON.stringify({
+            "username":logAttemptUsername,
+        }),
+    });
+    if(matchMaking.status === 200)
+    {
+        const message = await matchMaking.json();
+        console.log(message.success);
+    }
+    if(matchMaking.status === 400)
+    {
+        const errorMessage = await matchMaking.json();
+        console.log(errorMessage.error);
     }
 }
