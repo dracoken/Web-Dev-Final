@@ -223,7 +223,10 @@ async function login()
         const message = await loginAttempt.json();
         //console.log(message);
         console.log(message.success);
-        findMatch();
+        localStorage.setItem('username', message.playerId);
+        const test = localStorage.getItem('username');
+        console.log(test);
+        //findMatch();
     }
 }
 async function findMatch() {

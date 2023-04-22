@@ -19,8 +19,8 @@ app.use('/assests', express.static(path.join(__dirname, '/public')));
 app.get("/", (req,res) =>
 {
     //index = fetch()
-    res.sendFile(path.join(__dirname , 'public/htmlFiles/combatScene.html'));
-    //res.sendFile(path.join(__dirname, "public/htmlFiles/index.html"));
+    //res.sendFile(path.join(__dirname , 'public/htmlFiles/combatScene.html'));
+    res.sendFile(path.join(__dirname, "public/htmlFiles/index.html"));
 })
 
 app.post("/register",express.json(), async (req,res) => {
@@ -79,7 +79,8 @@ app.get("/login/:username/:password", express.json(), async (req,res) =>
         {
             throw new error;
         }
-        return res.status(200).json({success: "loged in successfully"});
+
+        return res.status(200).json({success: "loged in successfully",playerId: loginAttempt.userName});
         //return res.status(200).json(loginAttempt); //returns all the data of the user, including the password
     }
     catch(error)
