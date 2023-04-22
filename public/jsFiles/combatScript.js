@@ -24,8 +24,35 @@ async function updateStats(player1Data, player2Data) {
   document.getElementById("defdef").innerHTML = player2Data.playerData.def;
   console.log("Stats updated");
 }
+async function findMatch() {
+  const matchMaking = await fetch("/findGame",
+  {
+      method:"POST",
+      headers:{            
+          "Content-Type": "application/json",
+      },
+      body:JSON.stringify({
+          username: "test1",
+      }),
+  });
+  if(matchMaking.status === 200)
+  {
+      const message = await matchMaking.json();
+      console.log(message.success);
+      console.log("MATCH FOUND");
+  }
+  if(matchMaking.status === 400)
+  {
+      const errorMessage = await matchMaking.json();
+      console.log(errorMessage.error);
+  }
+}
 
-window.onload = async function(player1,player2) {
+window.onload = async() => {
+  console.log("searching for match")
+  findMatch();
+}
+async function loadData(player1,player2) {
   const playerStats1 = await fetch("/getCurrentHp/test1", 
   {
     method: "GET",
@@ -43,6 +70,7 @@ window.onload = async function(player1,player2) {
     {
         const errorMessage = await playerStats1.json();
         console.log(errorMessage.error);
+        alert("Yu dEd!");
     }
     
   const playerStats2 = await fetch("/getCurrentHp/test2", 
@@ -63,10 +91,15 @@ window.onload = async function(player1,player2) {
         const errorMessage = await playerStats2.json();
         console.log(errorMessage.error);
     }
-    
-
     updateStats(player1, player2)
+    /*
+    if(player1.Match.player1Turn == false)
+    {
+      document.getElementById('attackBtn').onclick = null;
+    }
+    */
   };
+  setInterval(loadData,3000);
 
 
 
@@ -154,7 +187,7 @@ myButton.addEventListener("click", async () => {
             "Content-Type":"application/json",
         },
         body:JSON.stringify({
-            id: 16 //this needs to be dynamically changing to be the match that the players are on
+            id:3 //this needs to be dynamically changing to be the match that the players are on
         })
     });
     
@@ -184,6 +217,7 @@ function log(message) {
     consoleDiv.innerHTML = "";
   }, 4000);
 }
+
 
 
   
