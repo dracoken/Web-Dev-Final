@@ -177,9 +177,9 @@ app.post("/findGame", express.json(), async (req,res)=>{
 });
 
 app.get("/getCurrentHp/:username", express.json(), async (req,res)=>{
-    //console.log("in getCurrentHp call");
+    console.log("in getCurrentHp call");
     const playerUsername = req.params.username;
-    console.log("playerUsername = " + playerUsername);
+    //console.log("playerUsername = " + playerUsername);
 
     const player = await prisma.User.findUnique({
         where:
@@ -196,7 +196,7 @@ app.get("/getCurrentHp/:username", express.json(), async (req,res)=>{
             matchId: true,
         }
     });
-    console.log(player);
+    //console.log(player);
     if(player == null)
     {
         return res.status(400).json({error:"player dosen't exist"});
@@ -209,6 +209,7 @@ app.post("/changeCurrentHp", express.json(), async (req,res) =>{
     const playerUserName = req.body.username;
     const playerNewHP = req.body.hp;
     let playerUpdate;
+    console.log("inside change currentHP");
     //console.log("player username = " + playerUserName);
     //console.log("hp sent = " + playerNewHP);
     if(req.method != "POST")
@@ -225,19 +226,19 @@ app.post("/changeCurrentHp", express.json(), async (req,res) =>{
     {
         return res.status(400).json({error: "player can't be found"});
     }
-
-    if(playerNewHP <= 0)
+    if(playerNewHP <= 0) //if player is dead
     {
-        playerUpdate = await prisma.User.update({ //updates the user's hp to the hp that was assigned to in the fetch request
-            where:
-            {
-                userName: playerUserName,
-            },
-            data:
-            {
-                currentHp:player.hp, //change this to the player original value
-            },
-        });
+        console.log("player died");
+        // playerUpdate = await prisma.User.update({ //updates the user's hp to the hp that was assigned to in the fetch request
+        //     where:
+        //     {
+        //         userName: playerUserName,
+        //     },
+        //     data:
+        //     {
+        //         currentHp:player.hp, //change this to the player original value
+        //     },
+        // });
 
         matchUpdate = await prisma.Match.update({
             where:
@@ -248,8 +249,52 @@ app.post("/changeCurrentHp", express.json(), async (req,res) =>{
             {
                 matchStarted: true,
                 matchDone: true,
-            }
+            },
+            include:
+            {
+                players: true,
+            },
         });
+
+        const p1Name = matchUpdate.players[0].userName;
+        const p1DefaultHp = matchUpdate.players[0].hp;
+
+        const p2Name = matchUpdate.players[1].userName;
+        const p2DefaultHp = matchUpdate.players[1].hp;
+
+        console.log("match before");
+        console.log(matchUpdate);
+
+
+        const p1 = await prisma.User.update({ //resetting player1 to their default hp
+            where:
+            {
+                userName: p1Name,
+            },
+            data: 
+            {
+                currentHp: p1DefaultHp,
+            },
+        });
+    
+        const p2 = await prisma.User.update({ //reseting player2 to their default hp
+            where: 
+            {
+                userName: p2Name,
+            },
+            data: 
+            {
+                currentHp: p2DefaultHp
+            },
+
+        });
+
+        
+        console.log("match after");
+        console.log(matchUpdate);
+
+        
+
         return res.status(200).json({success: "match done"});
     }
 
