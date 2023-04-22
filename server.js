@@ -313,6 +313,72 @@ app.post("/changeCurrentHp", express.json(), async (req,res) =>{
     return res.status(200).json({success:"hp changed successfully"});
 });
 
+app.post("/endTurn", express.json(), (req,res) =>{ //its assumed that the player id being sent. that it is their current turn, and that its about to end
+
+    if(req.method != "POST")
+    {
+       return res.status(400).json({error: "method sent in promise, was not a post method"});
+    }
+
+    const playerId = req.body.playerId; //id sent is actually the username sorry
+    const gameId = req.body.gameId;
+
+    let game;
+    game = prisma.Match.findFirst({
+        where:
+        {
+            id: gameId,
+        },
+        include:
+        {
+            players: true,
+        }
+    });
+    if(game == null)
+    {
+        return res.status(400).json({error:"game was not found"});
+    }
+
+    //checks if playerId sent is player one, or is player 2. to change the turn correctly
+    if(game.players[0].userName == playerId)
+    {
+        console.log("player1 is ending their turn");
+        console.log("changing to make it player's 2 turn");
+
+        game = prisma.Match.update({
+            where:
+            {
+                id:gameId,
+            },
+            data:
+            {
+                player1Turn: false,
+            }
+        });
+        console.log(game);
+    }
+    if(game.players[1].userName == playerId)
+    {
+        console.log("player2 is ending their turn");
+        console.log("changing to make it player's 1 turn");
+
+        game = prisma.Match.update({
+            where:
+            {
+                id:gameId,
+            },
+            data:
+            {
+                player1Turn: true,
+            }
+        });
+        console.log(game);
+    }
+    return res.status(200).json(game);
+
+})
+
+
 app.post("/abruptGameEnd", express.json(), async (req,res)=>{ //changes the 
     const gameId = req.body.id;
     let game;
