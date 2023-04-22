@@ -92,12 +92,18 @@ async function loadData(player1,player2) {
         console.log(errorMessage.error);
     }
     updateStats(player1, player2)
+<<<<<<< Updated upstream
     /*
+=======
+>>>>>>> Stashed changes
     if(player1.Match.player1Turn == false)
     {
       document.getElementById('attackBtn').onclick = null;
     }
+<<<<<<< Updated upstream
     */
+=======
+>>>>>>> Stashed changes
   };
   setInterval(loadData,3000);
 

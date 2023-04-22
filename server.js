@@ -5,13 +5,14 @@ const bodyParser = require('body-parser'); //allows us to read an inturpt the da
 const path = require("path");
 const exp = require('constants');
 const app = express();
+const cookieParser = require('cookie-parser');
 const port = 3000;
 const prisma = new PrismaClient();
 
 app.use(express.json());
 //app.use(express.json({extended: true, limit: '1mb'}));  // i dont think i need to restrict the data's size at all yet
 app.use(bodyParser.json());
-
+app.use(cookieParser());
 //look up how to do a delivery of static content on express
 //app.use(express.static('public'));
 app.use('/assests', express.static(path.join(__dirname, '/public')));
@@ -447,6 +448,38 @@ app.post("/abruptGameEnd", express.json(), async (req,res)=>{ //changes the
     });
     return res.status(200).json({error:"game ended abruptly, cancelling game"});    
 });
+app.get('/setCookie/:username', async (req, res) => {
+    let requestUsername = req.body.username; //this represents the queued player's id.
+    let newGame;
+    console.log("userName = " + requestUsername);
+    const player = await prisma.user.findUnique({
+        where:
+        {
+            userName:playerUsername,
+        },
+        select:
+        {
+            userName: true,
+            currentHp: true,
+            str: true,
+            def: true,
+            dex: true,
+            matchId: true,
+        }
+    });
+    if(player == null) //case where player dosen't exist
+    {
+        console.log("player dosen't exist");
+        return res.status(404).json({error: "user dosen't exist in db"}); //should this be a status of 400 or 404?
+    }
+    res.cookie('OreaCookie', JSON.stringify(player), { maxAge: 900000, httpOnly: true });
+    res.send('Cookie set');
+  });
+app.post('/readCookie', (req, res) => {
+    const myCookie = req.cookies.myCookie;
+    res.send(`Cookie value: ${myCookie}`);
+  });
+  
 
 app.listen(port)
 {

@@ -228,7 +228,7 @@ async function login()
         console.log(test);
         //findMatch();
     }
-}
+}/*
 async function findMatch() {
     const matchMaking = await fetch("/findGame",
     {
@@ -251,3 +251,5 @@ async function findMatch() {
         console.log(errorMessage.error);
     }
 }
+
+async*/
