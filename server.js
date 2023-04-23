@@ -237,7 +237,7 @@ app.get("/getGameDetails/:userId", express.json(), async (req,res) => {
 app.get("/getCurrentHp/:username", express.json(), async (req,res)=>{
     console.log("in getCurrentHp call");
     const playerUsername = req.params.username;
-    //console.log("playerUsername = " + playerUsername);
+    console.log("playerUsername is = " + playerUsername);
 
     const player = await prisma.User.findUnique({
         where:

@@ -118,14 +118,14 @@ async function findMatch(userId) {
           "Content-Type": "application/json",
       },
       body:JSON.stringify({
-          username: "test1",
+          username: userId,
       }),
   });
   if(matchMaking.status === 200)
   {
       const message = await matchMaking.json();
       console.log(message.success);
-      console.log("MATCH FOUND");
+      
   }
   if(matchMaking.status === 400)
   {
@@ -311,7 +311,42 @@ function log(message) {
   }, 4000);
 }
 
+/*
+async function changeTurn(player1Data) {
+const matchMaking = await fetch("/endTurn",
+  {
+      method:"POST",
+      headers:{            
+          "Content-Type": "application/json",
+      },
+      body:JSON.stringify({
+          id: "test1",
+      }),
+  });
+}
 
 
-  
-    
+
+player1 = await fetch(`/getData/${name}`,
+  {
+    method:'GET',
+    headers:{
+      "Content-Type": "application/json",
+    },
+  });
+  if (playerStats1.status == 200) {
+    player1Data = await player1.json();
+    console.log(player1Data)
+  let gameId = player1Data.matchId
+  let playersInMatch = await fetch(`/getMatchInfo/${gameId}`,
+  {
+    method:'GET',
+    headers:
+    {
+      "Content-Type":"application/json",
+    },
+  });
+  console.log("BIG TIME")
+  console.log(playersInMatch);
+  }
+*/
