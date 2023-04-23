@@ -183,7 +183,7 @@ app.post("/findGame", express.json(), async (req,res)=>{
 app.get("/getData/:username", express.json(), async (req,res)=>{
     console.log("in getData call");
     const playerUsername = req.params.username;
-    //console.log("playerUsername = " + playerUsername);
+    console.log("playerUsername is = " + playerUsername);
 
     const player = await prisma.User.findUnique({
         where:

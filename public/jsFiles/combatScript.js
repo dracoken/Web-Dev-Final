@@ -26,7 +26,7 @@ async function updateStats(player1Data, player2Data) {
   document.getElementById("defdef").innerHTML = player2Data.playerData.def;
   console.log("Stats updated");
 }
-let name = localStorage.getItem('username');
+
 
 async function showSearching() {
   element = document.querySelector('#searching');
@@ -36,9 +36,10 @@ async function hideSearching() {
   element = document.querySelector('#searching');
   element.style.visibility = 'hidden';
 }
-async function findMatch(name) {
-  
+async function findMatch() {
+  let name = localStorage.getItem('username');
   showSearching();
+  console.log(`The find Match username is: ${name}`);
   const matchMaking = await fetch("/findGame",
   {
       method:"POST",
@@ -62,31 +63,14 @@ async function findMatch(name) {
   }
 }
 
-window.onload = async(name) => {
-  
+window.onload = async() => {
+  let name = localStorage.getItem('username');
   console.log("searching for match")
   findMatch();
-  player1 = await fetch(`/getData/${name}`,
-  {
-    method:'GET',
-    headers:{
-      "Content-Type": "application/json",
-    },
-  });
-  let gameId = player1.matchId
-  let playersInMatch = await fetch(`/getMatchInfo/${gameId}`,
-  {
-    method:'GET',
-    headers:
-    {
-      "Content-Type":"application/json",
-    },
-  });
-  console.log("BIG TIME")
-  console.log(playersInMatch);
+  loadData();
 }
-async function loadData(name) {
-  
+async function loadData() {
+  let name = localStorage.getItem('username');
   const playerStats1 = await fetch(`/getData/${name}`, 
   {
     method: "GET",
@@ -104,9 +88,25 @@ async function loadData(name) {
     {
         const errorMessage = await playerStats1.json();
         console.log(errorMessage.error);
-        alert("Yu dEd!");
+        alert("You have died");
     }
+    console.log(player1.playerData.matchId);
+    let gameId = player1.playerData.matchId
+    console.log(gameId);
+    let playersInMatch = await fetch(`/getMatchInfo/${gameId}`,
+    {
+      method:'GET',
+      headers:
+      {
+        "Content-Type":"application/json",
+      },
+    });
+    console.log("BIG TIME")
+    console.log(playersInMatch);
     
+
+
+
   const playerStats2 = await fetch("/getData/test2", 
   {
     method: "GET",
@@ -126,12 +126,6 @@ async function loadData(name) {
         console.log(errorMessage.error);
     }
     updateStats(player1, player2)
-    /*
-    if(player1.Match.player1Turn == false)
-    {
-      document.getElementById('attackBtn').onclick = null;
-    }
-    */
   };
   setInterval(loadData,3000);
 
@@ -252,16 +246,42 @@ function log(message) {
   }, 4000);
 }
 
-
+/*
 async function changeTurn(player1Data) {
 const matchMaking = await fetch("/endTurn",
-{
-    method:"POST",
-    headers:{            
-        "Content-Type": "application/json",
-    },
-    body:JSON.stringify({
-        id: "test1",
-    }),
-});
+  {
+      method:"POST",
+      headers:{            
+          "Content-Type": "application/json",
+      },
+      body:JSON.stringify({
+          id: "test1",
+      }),
+  });
 }
+
+
+
+player1 = await fetch(`/getData/${name}`,
+  {
+    method:'GET',
+    headers:{
+      "Content-Type": "application/json",
+    },
+  });
+  if (playerStats1.status == 200) {
+    player1Data = await player1.json();
+    console.log(player1Data)
+  let gameId = player1Data.matchId
+  let playersInMatch = await fetch(`/getMatchInfo/${gameId}`,
+  {
+    method:'GET',
+    headers:
+    {
+      "Content-Type":"application/json",
+    },
+  });
+  console.log("BIG TIME")
+  console.log(playersInMatch);
+  }
+*/
