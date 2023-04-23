@@ -6,6 +6,8 @@ const registerLink = document.querySelector('.register-link');
 const btnPopup = document.querySelector('.btnLogin-popup');
 const iconClose = document.querySelector('.icon-close');
 
+
+const logForm = document.getElementById("loginForm");
 const loginUsername = document.getElementById("loginUsername");
 const loginPassword = document.getElementById("loginPassword");
 const logRemberLogin = document.getElementById("rememberLogin");
@@ -93,18 +95,16 @@ async function register()
 
 
 
-// loginButton.addEventListener("click", (event) => {
-
-// });
-
 //and also we have to stop the default behavior of the form, if we do see an invaild login occur
-async function login()
+async function login(ev)
 {
+    //ev.preventDefault(); //uncomment this line during presentation to show that the login works properly
     console.log("in login function");
     const logAttemptUsername = loginUsername.value;
     const logAttemptPassword = loginPassword.value;
-    
-    
+    localStorage.setItem('username', logAttemptUsername);  //uncommnet this line during presentation to show that our page website dose infact do login verfication, just that the form dosen't care and moves on before the page dose the verification 
+    //findMatch(logAttemptUsername); //comment this line during presentation when showing login verification
+
     //test code for when the game is ended abruptly. ie if a player exits the website mid match
     /*
     const abruptEnd = await fetch("/abruptGameEnd", 
@@ -133,7 +133,6 @@ async function login()
         console.log(errorMessage.error);
     }
     */
-
 
     /*
     //test code for getting the player's current hp. it currently just returns the entire user info. i can later change it to return just the current hp
@@ -184,8 +183,6 @@ async function login()
     }
     */
     
-
-
     /*
         //below is test code for match making
     const matchMaking = await fetch("/findGame",
@@ -213,7 +210,8 @@ async function login()
     //below all works im just testing if my api route works
     const loginAttempt = await fetch(`/login/${logAttemptUsername}/${logAttemptPassword}`);
     if(loginAttempt.status === 400)
-    {
+    {   
+        ev.preventDefault();
         const errorMessage = await loginAttempt.json();
         console.log(errorMessage.error);
         alert("invaild username or password");
@@ -223,6 +221,33 @@ async function login()
         const message = await loginAttempt.json();
         //console.log(message);
         console.log(message.success);
+        localStorage.setItem('username', message.playerId); //sets the local storage with the id of the loged in user
+        //const storeUsername = localStorage.getItem('username');  
+        //console.log(storeUsername);
+        //findMatch(message.player.id);
     }
-
 }
+
+async function findMatch(userId) {
+    const matchMaking = await fetch(`/findGame/${userId}`,
+    {
+        method:"POST",
+        headers:{            
+            "Content-Type": "application/json",
+        },
+        body:JSON.stringify({
+            "username":logAttemptUsername,
+        }),
+    });
+    if(matchMaking.status === 200)
+    {
+        const message = await matchMaking.json();
+        console.log(message.success);
+    }
+    if(matchMaking.status === 400)
+    {
+        const errorMessage = await matchMaking.json();
+        console.log(errorMessage.error);
+    }
+}
+
