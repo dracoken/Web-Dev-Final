@@ -5,16 +5,12 @@ const bodyParser = require('body-parser'); //allows us to read an inturpt the da
 const path = require("path");
 const exp = require('constants');
 const app = express();
-const cookieParser = require('cookie-parser');
 const port = 3000;
 const prisma = new PrismaClient();
 
 app.use(express.json());
-//app.use(express.json({extended: true, limit: '1mb'}));  // i dont think i need to restrict the data's size at all yet
 app.use(bodyParser.json());
-app.use(cookieParser());
-//look up how to do a delivery of static content on express
-//app.use(express.static('public'));
+
 app.use('/assests', express.static(path.join(__dirname, '/public')));
 
 app.get("/", (req,res) =>
@@ -81,6 +77,7 @@ app.get("/login/:username/:password", express.json(), async (req,res) =>
             throw new error;
         }
 
+        console.log(loginAttempt.userName);
         return res.status(200).json({success: "loged in successfully",playerId: loginAttempt.userName});
         //return res.status(200).json(loginAttempt); //returns all the data of the user, including the password
     }
@@ -97,9 +94,10 @@ app.post("/findGame", express.json(), async (req,res)=>{
     //if match already has a player, then we update the match with the queued player, and the update that match to say its in progress, and create a new match record to the data base.
     //const player = req.params.username; //player in the queue/lobby to join a match that still needs more players to join it
 
+    console.log("in findGame endpoint");
     let requestUsername = req.body.username; //this represents the queued player's id.
     let newGame;
-    console.log("userName = " + requestUsername);
+    //console.log("userName = " + requestUsername);
     const player = await prisma.user.findUnique({
         where: 
         {
@@ -113,7 +111,31 @@ app.post("/findGame", express.json(), async (req,res)=>{
     }
     //console.log(player); //it grabs the player correctly
 
-    
+    const inGame = await prisma.Match.findFirst({ //well look over this code in a bit
+        where:
+        {
+            matchStarted: true,
+            matchDone: false,
+            players:
+            {
+                some:
+                {
+                    userName: player.userName,
+                },
+            },
+        },
+        include:
+        {
+            players: true,
+        },
+    });
+    //console.log("in game = ");
+    //console.log(inGame);
+    if(inGame != null && inGame.matchDone == false)
+    {
+        return res.status(409).json({error:"player is currently in game " + inGame.id, gameDets: inGame})
+    }
+
     const availableGame = await prisma.Match.findFirst({ //finds first abvaible match, that needs a player to start
         where: {
             matchStarted: false,
@@ -124,7 +146,7 @@ app.post("/findGame", express.json(), async (req,res)=>{
             players:true,
         }
     });
-    //console.log("no games availble = ");
+    //console.log("availbleGame = ");
     //console.log(availableGame);
     if(availableGame == null) //case in which no games exists(we create new game and update it with the queuedPlayer)
     {
@@ -146,14 +168,18 @@ app.post("/findGame", express.json(), async (req,res)=>{
                 players: true,
             }
         });
-        console.log(newGame); //it creates a new match with the queue player in it, in the case where no abavile matches are present
+        //console.log(newGame); //it creates a new match with the queue player in it, in the case where no abavile matches are present
         return res.status(200).json({success:"match dosen't have enough players to start the match, waiting on second player to join"});
     }
+    //console.log("testing");
+    //console.log(availableGame);
+
     if(availableGame.players[0].userName == requestUsername) //checks if player is trying to join the same match for the second time, and rejects the request
     {
+        console.log("player tried to join same game twice");
         return res.status(400).json({error:"player can't join the same game twice"});
     }
-
+    console.log("creating new game");
     newGame = await prisma.Match.update({ //adds the new player into the match
         where:
         {
@@ -175,8 +201,37 @@ app.post("/findGame", express.json(), async (req,res)=>{
             }
         },
     });
+    console.log(newGame);
     return res.status(200).json({success:"match has started"})
     //redirect to combat page
+});
+
+app.get("/getGameDetails/:userId", express.json(), async (req,res) => {
+    //console.log("inside getGameDetails");
+    const user = req.params.userId;
+
+    const game = await prisma.Match.findFirst({
+        where:
+        {
+            players: 
+            {
+                some:
+                {
+                    userName: user,
+                },
+            },
+        },
+        include: 
+        {
+            players:true,
+        }
+    });
+    //console.log(game);
+    if(game == null)
+    {
+        return res.status(400).json({error:"user is not in a game"});
+    }
+    return res.status(200).json(game);
 });
 
 app.get("/getCurrentHp/:username", express.json(), async (req,res)=>{
@@ -315,7 +370,7 @@ app.post("/changeCurrentHp", express.json(), async (req,res) =>{
     return res.status(200).json({success:"hp changed successfully"});
 });
 
-app.post("/endTurn", express.json(), (req,res) =>{ //its assumed that the player id being sent. that it is their current turn, and that its about to end
+app.post("/endTurn", express.json(), async (req,res) =>{ //its assumed that the player id being sent. that it is their current turn, and that its about to end
 
     if(req.method != "POST")
     {
@@ -324,18 +379,20 @@ app.post("/endTurn", express.json(), (req,res) =>{ //its assumed that the player
 
     const playerId = req.body.playerId; //id sent is actually the username sorry
     const gameId = req.body.gameId;
-
+    console.log("gameId = " + gameId);
     let game;
-    game = prisma.Match.findFirst({
+    game = await prisma.Match.findFirst({
         where:
         {
-            id: gameId,
+            id: parseInt(gameId),
         },
         include:
         {
             players: true,
         }
     });
+    console.log("game in end turn = ");
+    console.log(game);
     if(game == null)
     {
         return res.status(400).json({error:"game was not found"});
@@ -347,14 +404,18 @@ app.post("/endTurn", express.json(), (req,res) =>{ //its assumed that the player
         console.log("player1 is ending their turn");
         console.log("changing to make it player's 2 turn");
 
-        game = prisma.Match.update({
+        game = await prisma.Match.update({
             where:
             {
-                id:gameId,
+                id:parseInt(gameId),
             },
             data:
             {
                 player1Turn: false,
+            },
+            include:
+            {
+                players:true,
             }
         });
         console.log(game);
@@ -364,10 +425,10 @@ app.post("/endTurn", express.json(), (req,res) =>{ //its assumed that the player
         console.log("player2 is ending their turn");
         console.log("changing to make it player's 1 turn");
 
-        game = prisma.Match.update({
+        game = await prisma.Match.update({
             where:
             {
-                id:gameId,
+                id:parseInt(gameId),
             },
             data:
             {
@@ -448,38 +509,6 @@ app.post("/abruptGameEnd", express.json(), async (req,res)=>{ //changes the
     });
     return res.status(200).json({error:"game ended abruptly, cancelling game"});    
 });
-app.get('/setCookie/:username', async (req, res) => {
-    let requestUsername = req.body.username; //this represents the queued player's id.
-    let newGame;
-    console.log("userName = " + requestUsername);
-    const player = await prisma.user.findUnique({
-        where:
-        {
-            userName:playerUsername,
-        },
-        select:
-        {
-            userName: true,
-            currentHp: true,
-            str: true,
-            def: true,
-            dex: true,
-            matchId: true,
-        }
-    });
-    if(player == null) //case where player dosen't exist
-    {
-        console.log("player dosen't exist");
-        return res.status(404).json({error: "user dosen't exist in db"}); //should this be a status of 400 or 404?
-    }
-    res.cookie('OreaCookie', JSON.stringify(player), { maxAge: 900000, httpOnly: true });
-    res.send('Cookie set');
-  });
-app.post('/readCookie', (req, res) => {
-    const myCookie = req.cookies.myCookie;
-    res.send(`Cookie value: ${myCookie}`);
-  });
-  
 
 app.listen(port)
 {
