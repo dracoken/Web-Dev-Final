@@ -98,12 +98,7 @@ async function register()
 // });
 
 //and also we have to stop the default behavior of the form, if we do see an invaild login occur
-async function login()
-{
-    console.log("in login function");
-    const logAttemptUsername = loginUsername.value;
-    const logAttemptPassword = loginPassword.value;
-    
+   
     
     //test code for when the game is ended abruptly. ie if a player exits the website mid match
     /*
@@ -211,6 +206,13 @@ async function login()
     */
 
     //below all works im just testing if my api route works
+    /*
+    async function login()
+    {
+        console.log("in login function");
+        const logAttemptUsername = loginUsername.value;
+        const logAttemptPassword = loginPassword.value;
+ 
     const loginAttempt = await fetch(`/login/${logAttemptUsername}/${logAttemptPassword}`);
     if(loginAttempt.status === 400)
     {
@@ -226,9 +228,51 @@ async function login()
         localStorage.setItem('username', message.playerId);
         const test = localStorage.getItem('username');
         console.log(test);
+        window.location.href = 'public/htmlFiles/combatScene.html'
         //findMatch();
     }
-}/*
+
+}*/
+
+// script.js
+
+const loginForm = document.querySelector('#login-form');
+
+
+  loginButton.addEventListener('click', async (event) => {
+    //event.preventDefault();
+
+    const username = document.querySelector('#loginUsername').value;
+    const password = document.querySelector('#loginPassword').value;
+
+    const loginAttempt = await fetch(`/login/${username}/${password}`,
+    {
+        method:"GET",
+        headers:{            
+            "Content-Type": "application/json",
+        },
+    });
+    if(loginAttempt.status === 400)
+    {
+        const errorMessage = await loginAttempt.json();
+        console.log(errorMessage.error);
+        alert("invaild username or password");
+    }
+    if(loginAttempt.status === 200)
+    {
+        const message = await loginAttempt.json();
+        console.log(message);
+        console.log(message.success);
+        console.log(message.id)
+        localStorage.setItem('username', message.userName);
+        const test = localStorage.getItem('username');
+        console.log(test);
+        window.location.href = 'assests/htmlFiles/combatScene.html'
+        //findMatch();
+    }
+  });
+
+/*
 async function findMatch() {
     const matchMaking = await fetch("/findGame",
     {

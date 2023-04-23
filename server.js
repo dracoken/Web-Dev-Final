@@ -80,9 +80,8 @@ app.get("/login/:username/:password", express.json(), async (req,res) =>
         {
             throw new error;
         }
-
-        return res.status(200).json({success: "loged in successfully",playerId: loginAttempt.userName});
-        //return res.status(200).json(loginAttempt); //returns all the data of the user, including the password
+        //return res.status(200).json({success: "loged in successfully",playerId: loginAttempt.userName});
+        return res.status(200).json(loginAttempt); //returns all the data of the user, including the password
     }
     catch(error)
     {
@@ -148,7 +147,9 @@ app.post("/findGame", express.json(), async (req,res)=>{
         });
         console.log(newGame); //it creates a new match with the queue player in it, in the case where no abavile matches are present
         return res.status(200).json({success:"match dosen't have enough players to start the match, waiting on second player to join"});
-    }
+    } 
+    console.log(availableGame.players[0].userName)
+    console.log(availableGame.players[0])
     if(availableGame.players[0].userName == requestUsername) //checks if player is trying to join the same match for the second time, and rejects the request
     {
         return res.status(400).json({error:"player can't join the same game twice"});
@@ -179,8 +180,8 @@ app.post("/findGame", express.json(), async (req,res)=>{
     //redirect to combat page
 });
 
-app.get("/getCurrentHp/:username", express.json(), async (req,res)=>{
-    console.log("in getCurrentHp call");
+app.get("/getData/:username", express.json(), async (req,res)=>{
+    console.log("in getData call");
     const playerUsername = req.params.username;
     //console.log("playerUsername = " + playerUsername);
 
@@ -480,7 +481,26 @@ app.post('/readCookie', (req, res) => {
     res.send(`Cookie value: ${myCookie}`);
   });
   
-
+app.get('/getMatchInfo/:matchId', async (req,res) => {
+    let player = req.body.matchId
+    const currGameId = await prisma.Match.findUnique({
+        where:
+        {
+            id:player,
+        },
+        include:
+        {
+            players:true,
+        }
+    });
+    if (currGameId == null)
+    {
+        console.log("no match id found")
+        return res.status(404).json({error: "match dosen't exist in db"});
+    }
+    console.log(currGameId.players);
+    return res.status(200).json(currGameId.players);
+})
 app.listen(port)
 {
     console.log("listiening on port " + port);
